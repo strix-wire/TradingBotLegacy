@@ -9,11 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="Binance.Net" Version="8.4.3" />
     <PackageReference Include="MediatR" Version="12.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ExchangeApiClients\" />
   </ItemGroup>
 
 </Project>
