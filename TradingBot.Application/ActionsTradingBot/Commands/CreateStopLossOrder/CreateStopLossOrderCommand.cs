@@ -5,5 +5,6 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateStopLossOrder;
 
 internal class CreateStopLossOrderCommand : IRequest
 {
-    public IExchangeApiClient ExchangeApiClient { get; set; }
+    public CreateStopLossOrderCommand(IExchangeApiClient exchangeApiClient) => ExchangeApiClient = exchangeApiClient;
+    public IExchangeApiClient ExchangeApiClient { get; init; }
 }

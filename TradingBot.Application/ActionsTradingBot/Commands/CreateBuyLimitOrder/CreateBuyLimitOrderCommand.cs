@@ -5,5 +5,6 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateBuyLimitOrder;
 
 internal class CreateBuyLimitOrderCommand : IRequest
 {
-    public IExchangeApiClient ExchangeApiClient { get; set; }
+    public CreateBuyLimitOrderCommand(IExchangeApiClient exchangeApiClient) => ExchangeApiClient = exchangeApiClient;
+    public IExchangeApiClient ExchangeApiClient { get; init; }
 }

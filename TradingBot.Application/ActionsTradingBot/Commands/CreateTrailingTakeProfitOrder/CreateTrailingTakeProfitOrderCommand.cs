@@ -5,5 +5,6 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateTrailingTakePr
 
 internal class CreateTrailingTakeProfitOrderCommand : IRequest
 {
-    public IExchangeApiClient ExchangeApiClient { get; set; }
+    public CreateTrailingTakeProfitOrderCommand(IExchangeApiClient exchangeApiClient) => ExchangeApiClient = exchangeApiClient;
+    public IExchangeApiClient ExchangeApiClient { get; init; }
 }

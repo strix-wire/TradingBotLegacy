@@ -5,5 +5,6 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateBuyMarketOrder
 
 internal class CreateBuyMarketOrderCommand : IRequest
 {
-    public IExchangeApiClient ExchangeApiClient { get; set; }
+    public CreateBuyMarketOrderCommand(IExchangeApiClient exchangeApiClient) => ExchangeApiClient = exchangeApiClient;
+    public IExchangeApiClient ExchangeApiClient { get; init; }
 }

@@ -5,5 +5,7 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CloseAllPositionsAnd
 
 internal class CloseAllPositionsAndOrdersCommand : IRequest
 {
-    public IExchangeApiClient ExchangeApiClient { get; set; }
+    public CloseAllPositionsAndOrdersCommand(IExchangeApiClient exchangeApiClient) => ExchangeApiClient = exchangeApiClient;
+
+    public IExchangeApiClient ExchangeApiClient { get; init; }
 }
