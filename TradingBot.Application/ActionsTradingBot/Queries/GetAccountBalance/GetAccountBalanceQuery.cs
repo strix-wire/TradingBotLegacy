@@ -5,5 +5,6 @@ namespace TradingBot.Application.ActionsTradingBot.Queries.GetAccountBalance;
 
 internal class GetAccountBalanceQuery : IRequest
 {
-    public IExchangeApiClient ExchangeApiClient { get; set; }
+    public GetAccountBalanceQuery(IExchangeApiClient exchangeApiClient) => ExchangeApiClient = exchangeApiClient;
+    public IExchangeApiClient ExchangeApiClient { get; init; }
 }
