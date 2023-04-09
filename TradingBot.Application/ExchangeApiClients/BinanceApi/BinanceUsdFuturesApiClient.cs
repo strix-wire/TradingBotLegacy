@@ -1,7 +1,6 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 using TradingBot.Application.Interfaces;
-using TradingBot.Application.Common.Enum;
 
 namespace TradingBot.Application.ExchangeApiClients.BinanceApi;
 
