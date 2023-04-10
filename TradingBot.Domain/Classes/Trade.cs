@@ -1,4 +1,4 @@
-﻿namespace TradingBot.Domain;
+﻿namespace TradingBot.Domain.Classes;
 
 public class Trade
 {
