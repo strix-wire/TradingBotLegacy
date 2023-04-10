@@ -4,8 +4,8 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateBuyMarketOrder
 
 internal class CreateBuyMarketOrderHandler : IRequestHandler<CreateBuyMarketOrderCommand>
 {
-    public Task Handle(CreateBuyMarketOrderCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateBuyMarketOrderCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await request.ExchangeApiClient.CreateBuyMarketOrderAsync(request.Symbol, request.OrderSide, request.Quantity, request.Price);
     }
 }

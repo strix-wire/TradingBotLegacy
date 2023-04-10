@@ -4,8 +4,8 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateTakeProfitOrde
 
 internal class CreateTakeProfitOrderHandler : IRequestHandler<CreateTakeProfitOrderCommand>
 {
-    public Task Handle(CreateTakeProfitOrderCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateTakeProfitOrderCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await request.ExchangeApiClient.CreateTakeProfitOrderAsync(request.Symbol, request.OrderSide, request.Quantity, request.Price);
     }
 }

@@ -4,8 +4,8 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateStopLossOrder;
 
 internal class CreateStopLossOrderHandler : IRequestHandler<CreateStopLossOrderCommand>
 {
-    public Task Handle(CreateStopLossOrderCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateStopLossOrderCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await request.ExchangeApiClient.CreateStopLossOrderAsync(request.Symbol, request.OrderSide, request.Quantity, request.Price);
     }
 }

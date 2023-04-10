@@ -4,8 +4,8 @@ namespace TradingBot.Application.ActionsTradingBot.Commands.CreateBuyLimitOrder;
 
 internal class CreateBuyLimitOrderHandler : IRequestHandler<CreateBuyLimitOrderCommand>
 {
-    public Task Handle(CreateBuyLimitOrderCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateBuyLimitOrderCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await request.ExchangeApiClient.CreateBuyLimitOrderAsync(request.Symbol, request.OrderSide, request.Quantity, request.Price);
     }
 }
