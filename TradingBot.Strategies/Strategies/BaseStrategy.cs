@@ -12,5 +12,5 @@ public abstract class BaseStrategy
     /// <summary>
     /// Запускает работу
     /// </summary>
-    public abstract string Run { get; }
+    public abstract void Run();
 }
