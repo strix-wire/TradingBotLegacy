@@ -1,7 +1,7 @@
 ﻿using TradingBot.Domain.Classes;
 using TradingBot.Domain.Enums;
 
-namespace TradingBot.Strategies.PatternsOfExchange;
+namespace TradingBot.Strategies.PatternsOfExchange.Classes;
 
 internal class LevelDetection
 {
@@ -15,7 +15,7 @@ internal class LevelDetection
     /// <param name="distanceBetweenTouchingCandlesRequired">меньше или равно количество свечек свечек которое должны быть между свечками,
     /// которые находятся в нужной окрестности</param>
     /// <returns></returns>
-    public float GetCountCandlesInToleranceWick(IEnumerable<Candle> candles, decimal resistanceLevel, decimal tolerancePct,
+    public int GetCountCandlesInToleranceWick(IEnumerable<Candle> candles, decimal resistanceLevel, decimal tolerancePct,
         Wick wick, int distanceBetweenTouchingCandlesRequired)
     {
         decimal tolerance = tolerancePct / 100;

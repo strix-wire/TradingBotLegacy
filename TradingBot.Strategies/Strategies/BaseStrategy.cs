@@ -12,5 +12,5 @@ public abstract class BaseStrategy
     /// <summary>
     /// Запускает работу
     /// </summary>
-    public abstract void Run();
+    public abstract Task RunAsync(string symbol, IExchangeApiClient spotExchangeApiClient = null);
 }
