@@ -5,9 +5,10 @@ using TradingBot.Application.Interfaces;
 namespace TradingBot.Strategies.PatternsOfExchange.Classes
 {
     /// <summary>
-    /// Закрывает сделку частями
+    /// Закрывает сделку частями используя стакан
+    /// т.е. цену закрытия выбирает на основе стакана
     /// </summary>
-    internal class CloseOrder
+    internal class CloseOrderByGlass
     {
         private readonly IExchangeApiClient _exchangeApiClient;
         private readonly string _symbol;
@@ -15,8 +16,22 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
         private readonly decimal _quantity;
         private readonly decimal _priceOpenOrder;
         private decimal _priceST = 0m;
-        public CloseOrder(IExchangeApiClient exchangeApiClient, string symbol, OrderSide orderSide, decimal quantity, decimal price) =>
-            (_exchangeApiClient, _symbol, _orderSide, _quantity, _priceOpenOrder) = (exchangeApiClient, symbol, orderSide, quantity, price);
+        private short _capacityGlass;
+        /// <summary>
+        /// Шаг цены
+        /// </summary>
+        private decimal _priceStep;
+        public CloseOrderByGlass(IExchangeApiClient exchangeApiClient, string symbol, OrderSide orderSide,
+            decimal quantity, decimal priceOpenOrder, short capacityGlass)
+        {
+            _exchangeApiClient = exchangeApiClient;
+            _symbol = symbol;
+            _orderSide = orderSide;
+            _quantity = quantity;
+            _priceOpenOrder = priceOpenOrder;
+            _capacityGlass = capacityGlass;
+            _priceStep = 
+        }
 
         public async Task SetStopLossAndTakeProfit()
         {
@@ -24,9 +39,13 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
             await CascadeCloseTakeProfit();
         }
 
+        /// <summary>
+        /// ST by best glass
+        /// </summary>
+        /// <returns></returns>
         private async Task SetStopLoss()
         {
-            var glass = await _exchangeApiClient.GetGlassAsync(_symbol, 20);
+            var glass = await _exchangeApiClient.GetGlassAsync(_symbol, _capacityGlass);
             if (_orderSide == OrderSide.Buy)
                 _priceST = glass.GetPriceByBestQuantityInBids();
             if (_orderSide == OrderSide.Sell)
