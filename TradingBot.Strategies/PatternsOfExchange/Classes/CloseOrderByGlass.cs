@@ -30,7 +30,7 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
             _quantity = quantity;
             _priceOpenOrder = priceOpenOrder;
             _capacityGlass = capacityGlass;
-            _priceStep = 
+            _priceStep = _exchangeApiClient.GetPriceStep(_symbol).Result;
         }
 
         public async Task SetStopLossAndTakeProfit()
@@ -40,20 +40,30 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
         }
 
         /// <summary>
-        /// ST by best glass
+        /// ST by best glass MINUS one step price
         /// </summary>
         /// <returns></returns>
         private async Task SetStopLoss()
         {
             var glass = await _exchangeApiClient.GetGlassAsync(_symbol, _capacityGlass);
-            if (_orderSide == OrderSide.Buy)
-                _priceST = glass.GetPriceByBestQuantityInBids();
-            if (_orderSide == OrderSide.Sell)
-                _priceST = glass.GetPriceByBestQuantityInAsks();
-
-            if (_priceST == 0m)
-                throw new NotImplementedException();
-
+            switch (_orderSide)
+            {
+                case OrderSide.Buy:
+                    {
+                        _priceST = glass.GetPriceByBestQuantityInBids();
+                        _priceST -= _priceStep;
+                        break;
+                    }
+                case OrderSide.Sell:
+                    {
+                        _priceST = glass.GetPriceByBestQuantityInAsks();
+                        _priceST += _priceStep;
+                        break;
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+            
             await _exchangeApiClient.CreateStopLossOrderAsync(_symbol, _orderSide, _quantity, _priceST);
         }
 
