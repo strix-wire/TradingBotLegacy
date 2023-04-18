@@ -1,6 +1,7 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 using TradingBot.Application.Interfaces;
+using TradingBot.Domain.Classes;
 
 namespace TradingBot.Application.ExchangeApiClients.BinanceApi;
 
@@ -51,5 +52,30 @@ internal class BinanceUsdFuturesApiClient : IExchangeApiClient
         var balance = balancesGeneralInfo.Data.FirstOrDefault(x => x.Asset == currencyCode)?.WalletBalance ?? 0;
 
         return balance;
+    }
+
+    public async Task<decimal> GetPriceAsync(string symbol)
+    { 
+        var priceBinance = await _clientHttp.ExchangeData.GetPriceAsync(symbol);
+        
+        return priceBinance.Data.Price;
+    }
+    
+
+    public async Task<IEnumerable<Candle>> GetCandlesHistoryAsync(string symbol, Domain.Enums.KlineInterval klineInterval, int limit)
+    {
+        var klines = await _clientHttp.ExchangeData.GetKlinesAsync(symbol, (KlineInterval)klineInterval, limit: limit);
+        
+        return klines.Data.Select(kline => new Candle(kline.CloseTime, kline.OpenPrice, kline.HighPrice, kline.LowPrice, kline.ClosePrice));
+    }
+
+    public async Task<Glass> GetGlassAsync(string symbol, int capacity)
+    {
+        var orderBook = await _clientHttp.ExchangeData.GetOrderBookAsync(symbol, capacity);
+        var glass = new Glass(capacity);
+        glass.UpdateWholeGlass(orderBook.Data.Bids.ToDictionary(x => x.Price, x => x.Quantity),
+            orderBook.Data.Asks.ToDictionary(x => x.Price, x => x.Quantity));
+        
+        return glass;
     }
 }

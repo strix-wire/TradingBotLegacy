@@ -3,6 +3,8 @@ using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
 using TradingBot.Application.Common.Enum;
 using TradingBot.Application.Interfaces;
+using TradingBot.Domain.Classes;
+using TradingBot.Domain.Enums;
 
 namespace TradingBot.Application.ExchangeApiClients.TinkoffApi;
 
@@ -47,6 +49,26 @@ internal class TinkoffApiClient : IExchangeApiClient
     }
 
     public Task<decimal> GetAccountBalanceAsync(string currencyCode)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Domain.Classes.Candle>> GetCandlesHistoryAsync(string symbol, KlineInterval klineInterval, int limit)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task GetGlass(string symbol)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Glass> GetGlassAsync(string symbol, int capacity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<decimal> GetPriceAsync(string symbol)
     {
         throw new NotImplementedException();
     }
