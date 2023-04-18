@@ -16,4 +16,5 @@ public interface IExchangeApiClient
     Task<decimal> GetAccountBalanceAsync(string currencyCode);
     Task<IEnumerable<Candle>> GetCandlesHistoryAsync(string symbol, Domain.Enums.KlineInterval klineInterval, int limit);
     Task<decimal> GetPriceAsync(string symbol);
+    Task<decimal> GetPriceStep(string symbol);
 }

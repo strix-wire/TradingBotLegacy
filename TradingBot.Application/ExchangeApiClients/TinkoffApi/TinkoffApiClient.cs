@@ -72,4 +72,9 @@ internal class TinkoffApiClient : IExchangeApiClient
     {
         throw new NotImplementedException();
     }
+
+    public Task<decimal> GetPriceStep(string symbol)
+    {
+        throw new NotImplementedException();
+    }
 }

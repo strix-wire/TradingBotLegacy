@@ -1,5 +1,6 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
+using System.Diagnostics;
 using TradingBot.Application.Interfaces;
 using TradingBot.Domain.Classes;
 
@@ -77,5 +78,17 @@ internal class BinanceUsdFuturesApiClient : IExchangeApiClient
             orderBook.Data.Asks.ToDictionary(x => x.Price, x => x.Quantity));
         
         return glass;
+    }
+
+    /// <summary>
+    /// Шаг цены
+    /// </summary>
+    /// <param name="symbol"></param>
+    /// <returns></returns>
+    public async Task<decimal> GetPriceStep(string symbol)
+    {
+        var q = await _clientHttp.ExchangeData.GetExchangeInfoAsync();
+        var symbolInfo = q.Data.Symbols.FirstOrDefault(x => x.Name == symbol);
+        return symbolInfo!.PriceFilter!.TickSize;
     }
 }

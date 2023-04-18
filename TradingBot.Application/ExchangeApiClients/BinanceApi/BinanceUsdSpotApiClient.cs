@@ -74,4 +74,9 @@ internal class BinanceUsdSpotApiClient : IExchangeApiClient
     {
         throw new NotImplementedException();
     }
+
+    public Task<decimal> GetPriceStep(string symbol)
+    {
+        throw new NotImplementedException();
+    }
 }

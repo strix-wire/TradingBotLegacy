@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace TradingBot.Domain.Classes;
+﻿namespace TradingBot.Domain.Classes;
 
 public class Glass
 {
