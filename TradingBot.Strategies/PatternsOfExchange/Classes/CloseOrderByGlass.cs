@@ -69,25 +69,26 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
 
         private async Task CascadeCloseTakeProfit()
         {
-            var fee = Convert.ToDecimal(ConfigurationManager.AppSettings["feePercentUsdtFururesBinance"]);
-            await CloseAtBreakeventHalf(fee);
-
+            var fee = await _exchangeApiClient.GetFeeMarket();
+            var priceTP = await CloseAtBreakeventHalf(fee);
+            await CloseProfitQuarter(priceTP);
         }
         /// <summary>
         /// Закрыть в безубыток с помощью
         /// половины позиции
         /// </summary>
         /// <returns></returns>
-        private async Task CloseAtBreakeventHalf(decimal fee)
+        private async Task<decimal> CloseAtBreakeventHalf(decimal fee)
         {
             //_priceOpenOrder*fee/100 который в конце - это приблизительная комиссия за продажу уже с тейк профитом
             decimal zatratiKromeTP = (_priceOpenOrder * fee / 100 + _priceST * fee / 100 + (_priceOpenOrder - _priceST) + _priceOpenOrder * fee / 100) / 2;
             var priceTP = zatratiKromeTP + _priceOpenOrder;
             await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 2, priceTP);
+            return priceTP;
         }
-        private async Task CloseProfitQuarter(decimal )
+        private async Task CloseProfitQuarter(decimal priceTP)
         {
-
+            var resPrice = _priceOpenOrder
         }
     }
 }

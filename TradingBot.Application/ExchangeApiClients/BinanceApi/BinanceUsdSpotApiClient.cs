@@ -60,6 +60,16 @@ internal class BinanceUsdSpotApiClient : IExchangeApiClient
         throw new NotImplementedException();
     }
 
+    public Task<decimal> GetFeeLimit()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<decimal> GetFeeMarket()
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Glass> GetGlassAsync(string symbol, int capacity)
     {
         var orderBook = await _clientHttp.ExchangeData.GetOrderBookAsync(symbol, capacity);

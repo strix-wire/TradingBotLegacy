@@ -1,5 +1,6 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
+using System.Configuration;
 using System.Diagnostics;
 using TradingBot.Application.Interfaces;
 using TradingBot.Domain.Classes;
@@ -87,8 +88,18 @@ internal class BinanceUsdFuturesApiClient : IExchangeApiClient
     /// <returns></returns>
     public async Task<decimal> GetPriceStep(string symbol)
     {
-        var q = await _clientHttp.ExchangeData.GetExchangeInfoAsync();
-        var symbolInfo = q.Data.Symbols.FirstOrDefault(x => x.Name == symbol);
+        var exchangeInfo = await _clientHttp.ExchangeData.GetExchangeInfoAsync();
+        var symbolInfo = exchangeInfo.Data.Symbols.FirstOrDefault(x => x.Name == symbol);
         return symbolInfo!.PriceFilter!.TickSize;
+    }
+
+    public Task<decimal> GetFeeMarket()
+    {
+        return Task.FromResult(Convert.ToDecimal(ConfigurationManager.AppSettings["feeMarketPercentUsdtFururesBinance"]));
+    }
+
+    public Task<decimal> GetFeeLimit()
+    {
+        throw new NotImplementedException();
     }
 }

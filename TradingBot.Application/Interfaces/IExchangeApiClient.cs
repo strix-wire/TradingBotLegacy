@@ -17,4 +17,6 @@ public interface IExchangeApiClient
     Task<IEnumerable<Candle>> GetCandlesHistoryAsync(string symbol, Domain.Enums.KlineInterval klineInterval, int limit);
     Task<decimal> GetPriceAsync(string symbol);
     Task<decimal> GetPriceStep(string symbol);
+    Task<decimal> GetFeeMarket();
+    Task<decimal> GetFeeLimit();
 }

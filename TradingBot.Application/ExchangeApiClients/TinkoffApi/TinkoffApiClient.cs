@@ -58,6 +58,16 @@ internal class TinkoffApiClient : IExchangeApiClient
         throw new NotImplementedException();
     }
 
+    public Task<decimal> GetFeeLimit()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<decimal> GetFeeMarket()
+    {
+        throw new NotImplementedException();
+    }
+
     public Task GetGlass(string symbol)
     {
         throw new NotImplementedException();
