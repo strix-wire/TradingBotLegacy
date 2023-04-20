@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using TradingBot.Application.Common.Enum;
+﻿using TradingBot.Application.Common.Enum;
 using TradingBot.Application.Interfaces;
 
 namespace TradingBot.Strategies.PatternsOfExchange.Classes
@@ -70,25 +69,32 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
         private async Task CascadeCloseTakeProfit()
         {
             var fee = await _exchangeApiClient.GetFeeMarket();
-            var priceTP = await CloseAtBreakeventHalf(fee);
-            await CloseProfitQuarter(priceTP);
+            var expenses = await CloseAtBreakeventHalf(fee);
+            await CloseFirstProfitQuarter(expenses);
+            await CloseSecondProfitQuarter(expenses);
         }
         /// <summary>
         /// Закрыть в безубыток с помощью
         /// половины позиции
         /// </summary>
-        /// <returns></returns>
+        /// <returns>затраты</returns>
         private async Task<decimal> CloseAtBreakeventHalf(decimal fee)
         {
             //_priceOpenOrder*fee/100 который в конце - это приблизительная комиссия за продажу уже с тейк профитом
-            decimal zatratiKromeTP = (_priceOpenOrder * fee / 100 + _priceST * fee / 100 + (_priceOpenOrder - _priceST) + _priceOpenOrder * fee / 100) / 2;
-            var priceTP = zatratiKromeTP + _priceOpenOrder;
+            decimal expenses = (_priceOpenOrder * fee / 100 + _priceST * fee / 100 + (_priceOpenOrder - _priceST) + _priceOpenOrder * fee / 100) / 2;
+            var priceTP = expenses + _priceOpenOrder;
             await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 2, priceTP);
-            return priceTP;
+            return expenses;
         }
-        private async Task CloseProfitQuarter(decimal priceTP)
+        private async Task CloseFirstProfitQuarter(decimal expenses)
         {
-            var resPrice = _priceOpenOrder
+            var resPrice = expenses * 2 + _priceOpenOrder;
+            await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 4, resPrice);
+        }
+        private async Task CloseSecondProfitQuarter(decimal expenses)
+        {
+            var resPrice = expenses * 4 + _priceOpenOrder;
+            await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 4, resPrice);
         }
     }
 }
