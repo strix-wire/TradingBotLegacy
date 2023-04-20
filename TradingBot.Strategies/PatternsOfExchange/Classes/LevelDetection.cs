@@ -9,18 +9,18 @@ internal class LevelDetection
     /// Получает количество свечек в заданной окрестности. Определение по тени
     /// </summary>
     /// <param name="candles"></param>
-    /// <param name="resistanceLevel">уровень цены, относительно к-го окрестность</param>
+    /// <param name="resistanceLevelPrice">уровень цены, относительно к-го окрестность</param>
     /// <param name="tolerancePct">Окрестность(точность) в %</param>
     /// <param name="wick">Уровень по верхней тени или по нижней смотреть</param>
     /// <param name="distanceBetweenTouchingCandlesRequired">меньше или равно количество свечек свечек которое должны быть между свечками,
     /// которые находятся в нужной окрестности</param>
     /// <returns></returns>
-    public int GetCountCandlesInToleranceWick(IEnumerable<Candle> candles, decimal resistanceLevel, decimal tolerancePct,
+    public int GetCountCandlesInToleranceWick(IEnumerable<Candle> candles, decimal resistanceLevelPrice, decimal tolerancePct,
         Wick wick, int distanceBetweenTouchingCandlesRequired)
     {
         decimal tolerance = tolerancePct / 100;
-        decimal lowerBound = resistanceLevel * (1 - tolerance);
-        decimal upperBound = resistanceLevel * (1 + tolerance);
+        decimal lowerBound = resistanceLevelPrice * (1 - tolerance);
+        decimal upperBound = resistanceLevelPrice * (1 + tolerance);
         return GetCountCandlesInBoundsByWick(candles, wick, lowerBound, upperBound, distanceBetweenTouchingCandlesRequired);
     }
 
