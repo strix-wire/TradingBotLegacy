@@ -6,6 +6,6 @@ internal class CreateBuyMarketOrderHandler : IRequestHandler<CreateBuyMarketOrde
 {
     public async Task Handle(CreateBuyMarketOrderCommand request, CancellationToken cancellationToken)
     {
-        await request.ExchangeApiClient.CreateBuyMarketOrderAsync(request.Symbol, request.OrderSide, request.Quantity, request.Price);
+        await request.ExchangeApiClient.CreateBuyMarketOrderAsync(request.Symbol, request.OrderSide, request.Quantity);
     }
 }

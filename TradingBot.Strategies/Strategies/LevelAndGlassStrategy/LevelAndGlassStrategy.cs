@@ -1,36 +1,57 @@
 ﻿using TradingBot.Application.Interfaces;
-using TradingBot.Strategies.PatternsOfExchange;
+using TradingBot.Domain.Enums;
+using TradingBot.Strategies.PatternsOfExchange.Classes;
 
 namespace TradingBot.Strategies.Strategies.LevelAndGlassStrategy;
 
-internal class LevelAndGlassStrategy : BaseStrategy
+public class LevelAndGlassStrategy : BaseStrategy
 {
-    public LevelAndGlassStrategy(IExchangeApiClient exchangeApiClient) : base(exchangeApiClient)
+    /// <summary>
+    /// меньше или равно количество свечек свечек которое должны быть между свечками,
+    /// которые находятся в нужной окрестности
+    /// </summary>
+    private readonly int _distanceBetweenTouchingCandlesRequired;
+    /// <summary>
+    /// Окрестность(точность) в %
+    /// </summary>
+    private readonly decimal _tolerancePct;
+    private readonly int _limitCandles;
+    private readonly int _neededCountCandlesIsToleranceWick;
+    private readonly decimal _bidsAsksRatio;
+    public LevelAndGlassStrategy(IExchangeApiClient exchangeApiClient, int distanceBetweenTouchingCandlesRequired,
+        decimal tolerancePct, int getHistoryLimitCandles, int neededCountCandlesIsToleranceWick, decimal bidsAsksRatio) : base(exchangeApiClient)
     {
+        _distanceBetweenTouchingCandlesRequired = distanceBetweenTouchingCandlesRequired;
+        _tolerancePct = tolerancePct;
+        _limitCandles = getHistoryLimitCandles;
+        _neededCountCandlesIsToleranceWick = neededCountCandlesIsToleranceWick;
+        _bidsAsksRatio = bidsAsksRatio;
     }
-
-    public override async Task RunAsync(string symbol, IExchangeApiClient spotExchangeApiClient = null)
+    public override async Task<bool> RunAsync(string symbol, IExchangeApiClient spotExchangeApiClient = null)
     {
-        while (true)
-        {
-            bool cond1 = await GetConditionByCountCandlesIsToleranceWick(symbol);
-            bool cond2 = await GetConditionByRationOnGlass(symbol);
-            bool cond3 = await GetConditionByRationOnGlassSPOT(symbol, spotExchangeApiClient);
+        bool cond1 = await GetConditionByCountCandlesIsToleranceWick(symbol);
+        if (cond1)
+            await Console.Out.WriteLineAsync($"cond1 == true. {DateTime.Now} {symbol}");
+        bool cond2 = await GetConditionByRationOnGlass(symbol);
+        if (cond2)
+            await Console.Out.WriteLineAsync($"cond2 == true. {DateTime.Now} {symbol}");
+        bool cond3 = await GetConditionByRationOnGlassSPOT(symbol, spotExchangeApiClient);
+        if (cond3)
+            await Console.Out.WriteLineAsync($"cond3 == true. {DateTime.Now} {symbol}");
 
-            if (cond1 && cond2 && cond3) 
-            {
-                
-            }
-        }
+        if (cond1 && cond2 && cond3) 
+            return true;
+
+        return false;
     }
     private async Task<bool> GetConditionByCountCandlesIsToleranceWick(string symbol)
     {
-        var candles = await ExchangeApiClient.GetCandlesHistoryAsync(symbol, Domain.Enums.KlineInterval.FiveMinutes, 30);
+        var candles = await ExchangeApiClient.GetCandlesHistoryAsync(symbol, Domain.Enums.KlineInterval.FiveMinutes, _limitCandles);
         var levelDetection = new LevelDetection();
         int countCandlesIsToleranceWick = levelDetection.GetCountCandlesInToleranceWick(candles,
-            await ExchangeApiClient.GetPriceAsync(symbol), 0.1m, Domain.Enums.Wick.Upper, 3);
+            await ExchangeApiClient.GetPriceAsync(symbol), _tolerancePct, Domain.Enums.Wick.Upper, _distanceBetweenTouchingCandlesRequired);
 
-        return countCandlesIsToleranceWick > 3;
+        return countCandlesIsToleranceWick > _neededCountCandlesIsToleranceWick;
     }
 
     private async Task<bool> GetConditionByRationOnGlass(string symbol)
@@ -39,7 +60,7 @@ internal class LevelAndGlassStrategy : BaseStrategy
         var bidsAsksRatio = new BidsAsksRatio();
         var asksBidsRation = new AsksBidsRatio();
 
-        return bidsAsksRatio.Calculate(glass) > 10 || asksBidsRation.Calculate(glass) > 10;
+        return bidsAsksRatio.Calculate(glass) > _bidsAsksRatio || asksBidsRation.Calculate(glass) > _bidsAsksRatio;
     }
 
     private async Task<bool> GetConditionByRationOnGlassSPOT(string symbol, IExchangeApiClient spotExchangeApiClient = null)
@@ -52,7 +73,7 @@ internal class LevelAndGlassStrategy : BaseStrategy
             var glass = await ExchangeApiClient.GetGlassAsync(symbol, 10);
             var bidsAsksRatio = new BidsAsksRatio();
             var asksBidsRation = new AsksBidsRatio();
-            return bidsAsksRatio.Calculate(glass) > 10 || asksBidsRation.Calculate(glass) > 10;
+            return bidsAsksRatio.Calculate(glass) > _bidsAsksRatio || asksBidsRation.Calculate(glass) > _bidsAsksRatio;
         }
 
         return false;

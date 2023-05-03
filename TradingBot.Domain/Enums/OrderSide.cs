@@ -1,4 +1,4 @@
-﻿namespace TradingBot.Application.Common.Enum;
+﻿namespace TradingBot.Domain.Enums;
 
 /// <summary>
 /// The side of an order

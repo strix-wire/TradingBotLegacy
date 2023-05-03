@@ -1,5 +1,4 @@
 ﻿using Binance.Net.Interfaces.Clients.SpotApi;
-using TradingBot.Application.Common.Enum;
 using TradingBot.Application.Interfaces;
 using TradingBot.Domain.Classes;
 using TradingBot.Domain.Enums;
@@ -30,12 +29,17 @@ internal class BinanceUsdSpotApiClient : IExchangeApiClient
         throw new NotImplementedException();
     }
 
-    public Task CreateBuyMarketOrderAsync(string symbol, OrderSide orderSide, decimal quantity, decimal price)
+    public Task<decimal> CreateBuyMarketOrderAsync(string symbol, OrderSide orderSide, decimal quantity)
     {
         throw new NotImplementedException();
     }
 
     public Task CreateStopLossOrderAsync(string symbol, OrderSide orderSide, decimal quantity, decimal price)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<long> CreateStopLossOrderAsync(string symbol, OrderSide orderSide, decimal price)
     {
         throw new NotImplementedException();
     }
@@ -80,12 +84,27 @@ internal class BinanceUsdSpotApiClient : IExchangeApiClient
         return glass;
     }
 
+    public Task<OrderStatus> GetOrderStatus(string symbol, long orderId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<decimal> GetPriceAsync(string symbol)
     {
         throw new NotImplementedException();
     }
 
     public Task<decimal> GetPriceStep(string symbol)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<long> IExchangeApiClient.CreateTakeProfitOrderAsync(string symbol, OrderSide orderSide, decimal quantity, decimal price)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<long> IExchangeApiClient.CreateTrailingTakeProfitOrderAsync(string symbol, OrderSide orderSide, decimal quantity, decimal price)
     {
         throw new NotImplementedException();
     }

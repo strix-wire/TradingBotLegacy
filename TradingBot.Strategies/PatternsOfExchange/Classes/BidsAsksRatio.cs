@@ -8,7 +8,7 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
 
         public decimal Calculate(Glass glass)
         {
-            decimal bidsTotal = glass.GetWholeAsks().Keys.Sum();
+            decimal bidsTotal = glass.GetWholeBids().Keys.Sum();
             decimal asksTotal = glass.GetWholeAsks().Keys.Sum();
 
             return asksTotal > 0 ? bidsTotal / asksTotal : DEFAULT_RATIO;

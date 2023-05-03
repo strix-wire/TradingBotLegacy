@@ -9,28 +9,28 @@ public class ClientsFactoryBinance
 {
     private static string _apiKey { get; set; }
     private static string _apiSecret { get; set; }
-    public ClientsFactoryBinance() => 
-        (ConfigurationManager.AppSettings["apiKeyBinance"], ConfigurationManager.AppSettings["apiSecretBinance"]) = (_apiKey, _apiSecret);
+    public ClientsFactoryBinance() =>
+        (_apiKey, _apiSecret) = (ConfigurationManager.AppSettings["apiKeyBinance"], ConfigurationManager.AppSettings["apiSecretBinance"]);
 
-    public static IExchangeApiClient GetClient(TypeBinanceClient typeBinanceClient)
+    public IExchangeApiClient GetClient(TypeBinanceClient typeBinanceClient)
     {
         switch (typeBinanceClient)
         {
-            case TypeBinanceClient.USDFutures:
+            case TypeBinanceClient.UsdtFutures:
                 return CreateBinanceUSDFutures();
-            case TypeBinanceClient.USDSpot:
+            case TypeBinanceClient.UsdtSpot:
                 return CreateBinanceUSDSpot();
             
             default: { throw new ArgumentException("Invalid factory type"); }
         }
     }
-    private static BinanceApiCredentials CreateApiCredentials(string apiKey, string apiSecret)
-        => new BinanceApiCredentials(apiKey, apiSecret);
+    private static BinanceApiCredentials CreateApiCredentials()
+        => new BinanceApiCredentials(_apiKey, _apiSecret);
 
     private static AllBinanceClients CreateBinanceClient()
     {
         var clientHttp = new BinanceClient();
-        clientHttp.SetApiCredentials(CreateApiCredentials(_apiKey, _apiSecret));
+        clientHttp.SetApiCredentials(CreateApiCredentials());
         var socketClient = new BinanceSocketClient();
 
         return new AllBinanceClients(clientHttp, socketClient);

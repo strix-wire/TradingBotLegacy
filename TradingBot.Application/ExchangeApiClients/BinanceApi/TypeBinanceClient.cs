@@ -2,6 +2,6 @@
 
 public enum TypeBinanceClient
 {
-    USDFutures = 0,
-    USDSpot = 1
+    UsdtFutures = 0,
+    UsdtSpot = 1
 }

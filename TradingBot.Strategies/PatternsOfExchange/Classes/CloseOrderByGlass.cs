@@ -1,5 +1,6 @@
-﻿using TradingBot.Application.Common.Enum;
+﻿
 using TradingBot.Application.Interfaces;
+using TradingBot.Domain.Enums;
 
 namespace TradingBot.Strategies.PatternsOfExchange.Classes
 {
@@ -7,7 +8,7 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
     /// Закрывает сделку частями используя стакан
     /// т.е. цену закрытия выбирает на основе стакана
     /// </summary>
-    internal class CloseOrderByGlass
+    public class CloseOrderByGlass
     {
         private readonly IExchangeApiClient _exchangeApiClient;
         private readonly string _symbol;
@@ -16,6 +17,7 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
         private readonly decimal _priceOpenOrder;
         private decimal _priceST = 0m;
         private short _capacityGlass;
+        private readonly CheckerStAndTp _checkerStAndTp;
         /// <summary>
         /// Шаг цены
         /// </summary>
@@ -29,6 +31,7 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
             _quantity = quantity;
             _priceOpenOrder = priceOpenOrder;
             _capacityGlass = capacityGlass;
+            _checkerStAndTp = new CheckerStAndTp(exchangeApiClient, _symbol);
             _priceStep = _exchangeApiClient.GetPriceStep(_symbol).Result;
         }
 
@@ -36,6 +39,13 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
         {
             await SetStopLoss();
             await CascadeCloseTakeProfit();
+        }
+
+        public async Task RunChecker()
+        {
+            bool res = false;
+            while (res == false)
+                res = await _checkerStAndTp.Run();
         }
 
         /// <summary>
@@ -63,7 +73,8 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
                     throw new NotImplementedException();
             }
             
-            await _exchangeApiClient.CreateStopLossOrderAsync(_symbol, _orderSide, _quantity, _priceST);
+            var orderId = await _exchangeApiClient.CreateStopLossOrderAsync(_symbol, _orderSide, _priceST);
+            _checkerStAndTp.OrderIdST = orderId;
         }
 
         private async Task CascadeCloseTakeProfit()
@@ -83,18 +94,21 @@ namespace TradingBot.Strategies.PatternsOfExchange.Classes
             //_priceOpenOrder*fee/100 который в конце - это приблизительная комиссия за продажу уже с тейк профитом
             decimal expenses = (_priceOpenOrder * fee / 100 + _priceST * fee / 100 + (_priceOpenOrder - _priceST) + _priceOpenOrder * fee / 100) / 2;
             var priceTP = expenses + _priceOpenOrder;
-            await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 2, priceTP);
+            var orderId = await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 2, priceTP);
+            _checkerStAndTp.OrderIdTPHalf = orderId;
             return expenses;
         }
         private async Task CloseFirstProfitQuarter(decimal expenses)
         {
             var resPrice = expenses * 2 + _priceOpenOrder;
-            await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 4, resPrice);
+            var orderId = await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 4, resPrice);
+            _checkerStAndTp.OrderIdTPFirstQuarter = orderId;
         }
         private async Task CloseSecondProfitQuarter(decimal expenses)
         {
             var resPrice = expenses * 4 + _priceOpenOrder;
-            await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 4, resPrice);
+            var orderId = await _exchangeApiClient.CreateTakeProfitOrderAsync(_symbol, _orderSide, _quantity / 4, resPrice);
+            _checkerStAndTp.OrderIdTPSecondQuarter = orderId;
         }
     }
 }

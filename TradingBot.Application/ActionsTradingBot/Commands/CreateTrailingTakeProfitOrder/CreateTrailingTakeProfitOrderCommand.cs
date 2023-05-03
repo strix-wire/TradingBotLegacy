@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using TradingBot.Application.Common.Enum;
 using TradingBot.Application.Interfaces;
+using TradingBot.Domain.Enums;
 
 namespace TradingBot.Application.ActionsTradingBot.Commands.CreateTrailingTakeProfitOrder;
 

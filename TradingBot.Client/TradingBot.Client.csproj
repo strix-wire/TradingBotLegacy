@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TradingBot.Strategies\TradingBot.Strategies.csproj" />
+  </ItemGroup>
+
 </Project>
