@@ -12,5 +12,5 @@ public abstract class BaseStrategy
     /// <summary>
     /// Запускает работу
     /// </summary>
-    public abstract Task RunAsync(string symbol, IExchangeApiClient spotExchangeApiClient = null);
+    public abstract Task RunAsync(string symbol, Domain.Enums.KlineInterval timeFrame, Domain.Enums.Wick wick, IExchangeApiClient spotExchangeApiClient = null);
 }

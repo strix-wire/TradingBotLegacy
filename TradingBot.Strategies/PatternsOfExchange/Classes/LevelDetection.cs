@@ -38,7 +38,7 @@ internal class LevelDetection
             return candles.FirstOrDefault(x => x.High > upperBound)==null ? true : false;
 
         if (wick == Wick.Lower)
-            return candles.FirstOrDefault(x => x.Low < upperBound) == null ? true : false;
+            return candles.FirstOrDefault(x => x.Low < lowerBound) == null ? true : false;
 
         return false;
         

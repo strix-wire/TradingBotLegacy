@@ -1,4 +1,5 @@
 ﻿using TradingBot.Application.Interfaces;
+using TradingBot.Application.Loggers;
 using TradingBot.Domain.Enums;
 using TradingBot.Strategies.PatternsOfExchange.Classes;
 
@@ -18,7 +19,8 @@ public class LevelAndGlassStrategy : BaseStrategy
     private readonly int _limitCandles;
     private readonly int _neededCountCandlesIsToleranceWick;
     private readonly decimal _bidsAsksRatio;
-    public LevelAndGlassStrategy(IExchangeApiClient exchangeApiClient, int distanceBetweenTouchingCandlesRequired,
+    private readonly ISenderAsync _senderAsync;
+    public LevelAndGlassStrategy(IExchangeApiClient exchangeApiClient, ISenderAsync senderAsync, int distanceBetweenTouchingCandlesRequired,
         decimal tolerancePct, int getHistoryLimitCandles, int neededCountCandlesIsToleranceWick, decimal bidsAsksRatio) : base(exchangeApiClient)
     {
         _distanceBetweenTouchingCandlesRequired = distanceBetweenTouchingCandlesRequired;
@@ -26,30 +28,35 @@ public class LevelAndGlassStrategy : BaseStrategy
         _limitCandles = getHistoryLimitCandles;
         _neededCountCandlesIsToleranceWick = neededCountCandlesIsToleranceWick;
         _bidsAsksRatio = bidsAsksRatio;
+        _senderAsync = senderAsync;
+
+        _senderAsync.SendAsync($"TradingBot ВКЛючился").Wait();
     }
-    public override async Task<bool> RunAsync(string symbol, IExchangeApiClient spotExchangeApiClient = null)
+    public override async Task<bool> RunAsync(string symbol, Domain.Enums.KlineInterval timeFrame, Domain.Enums.Wick wick,
+        IExchangeApiClient spotExchangeApiClient = null)
     {
-        bool cond1 = await GetConditionByCountCandlesIsToleranceWick(symbol);
+        string addingMsg = $"{DateTime.Now} {symbol}. TimeFrame: {timeFrame}. Wick: {wick}. Price: {await ExchangeApiClient.GetPriceAsync(symbol)}";
+
+        bool cond1 = await GetConditionByCountCandlesIsToleranceWick(symbol, timeFrame, wick);
         if (cond1)
-            await Console.Out.WriteLineAsync($"cond1 == true. {DateTime.Now} {symbol}");
+            await _senderAsync.SendAsync($"УРОВЕНЬ == true. " + addingMsg);
         bool cond2 = await GetConditionByRationOnGlass(symbol);
         if (cond2)
-            await Console.Out.WriteLineAsync($"cond2 == true. {DateTime.Now} {symbol}");
+            await _senderAsync.SendAsync($"Стакан фьюча == true. " + addingMsg);
         bool cond3 = await GetConditionByRationOnGlassSPOT(symbol, spotExchangeApiClient);
         if (cond3)
-            await Console.Out.WriteLineAsync($"cond3 == true. {DateTime.Now} {symbol}");
-
+            await _senderAsync.SendAsync($"Стакан спота == true. " + addingMsg);
         if (cond1 && cond2 && cond3) 
             return true;
 
         return false;
     }
-    private async Task<bool> GetConditionByCountCandlesIsToleranceWick(string symbol)
+    private async Task<bool> GetConditionByCountCandlesIsToleranceWick(string symbol, Domain.Enums.KlineInterval timeFrame, Domain.Enums.Wick wick)
     {
-        var candles = await ExchangeApiClient.GetCandlesHistoryAsync(symbol, Domain.Enums.KlineInterval.FiveMinutes, _limitCandles);
+        var candles = await ExchangeApiClient.GetCandlesHistoryAsync(symbol, timeFrame, _limitCandles);
         var levelDetection = new LevelDetection();
         int countCandlesIsToleranceWick = levelDetection.GetCountCandlesInToleranceWick(candles,
-            await ExchangeApiClient.GetPriceAsync(symbol), _tolerancePct, Domain.Enums.Wick.Upper, _distanceBetweenTouchingCandlesRequired);
+            await ExchangeApiClient.GetPriceAsync(symbol), _tolerancePct, wick, _distanceBetweenTouchingCandlesRequired);
 
         return countCandlesIsToleranceWick > _neededCountCandlesIsToleranceWick;
     }
@@ -77,5 +84,10 @@ public class LevelAndGlassStrategy : BaseStrategy
         }
 
         return false;
+    }
+
+    ~LevelAndGlassStrategy()
+    {
+        _senderAsync.SendAsync($"TradingBot зашел в ДЕСТРУКТОР").Wait();
     }
 }
